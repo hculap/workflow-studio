@@ -1,0 +1,21 @@
+{
+  "name": "workflow-studio",
+  "displayName": "Workflow Studio",
+  "description": "Observe and author Claude Code multi-agent Workflow runs — a local no-code builder + observability dashboard, exposed to the agent over MCP.",
+  "version": "0.1.0",
+  "author": { "name": "Szymon Paluch", "email": "hculap@gmail.com" },
+  "homepage": "https://github.com/hculap/workflow-studio",
+  "keywords": ["workflow", "agents", "observability", "mcp", "no-code", "claude-code"],
+  "mcpServers": {
+    "workflow-studio": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "${CLAUDE_PLUGIN_ROOT}/vendor/workflow_studio-0.1.0-py3-none-any.whl",
+        "workflow-studio",
+        "mcp"
+      ]
+    }
+  }
+}

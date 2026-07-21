@@ -1,0 +1,14 @@
+{
+  "name": "workflow-studio",
+  "owner": { "name": "Szymon Paluch", "email": "hculap@gmail.com" },
+  "description": "Local no-code builder + observability dashboard for Claude Code Workflow multi-agent runs.",
+  "plugins": [
+    {
+      "name": "workflow-studio",
+      "source": "./workflow-studio",
+      "category": "observability",
+      "description": "Observe and author Claude Code Workflow runs. Bundles an MCP server (list/inspect runs, read declared designs, draft workflows into the human's builder) and a /workflow-studio:dashboard command to open the visual dashboard.",
+      "keywords": ["workflow", "agents", "observability", "mcp", "no-code"]
+    }
+  ]
+}

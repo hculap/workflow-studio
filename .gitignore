@@ -1,0 +1,12 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Claude Code local state (never commit)
+.claude/settings.local.json
+
+# NOTE: workflow-studio/vendor/*.whl IS committed on purpose — it is how the plugin
+# installs before the package is published to PyPI. Do not add it here.
