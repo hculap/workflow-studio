@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.svg" width="80" alt="Workflow Studio">
+</p>
+
 # Workflow Studio
 
 **A local, no-code builder and observability dashboard for Claude Code's `Workflow` tool — exposed to the agent over MCP.**

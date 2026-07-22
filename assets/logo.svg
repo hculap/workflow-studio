@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="88" height="88" role="img" aria-label="Workflow Studio">
+  <circle cx="4" cy="12" r="2.4" fill="#f0a63a"/>
+  <circle cx="13" cy="5" r="2.2" fill="none" stroke="#17b0a4" stroke-width="1.6"/>
+  <circle cx="13" cy="19" r="2.2" fill="none" stroke="#17b0a4" stroke-width="1.6"/>
+  <circle cx="20.5" cy="12" r="2.2" fill="none" stroke="#17b0a4" stroke-width="1.6"/>
+  <path d="M6.3 11 L11 6 M6.3 13 L11 18 M15 6 L18.6 11 M15 18 L18.6 13" stroke="#17b0a4" stroke-width="1.4" stroke-linecap="round"/>
+</svg>
