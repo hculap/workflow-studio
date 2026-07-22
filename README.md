@@ -52,7 +52,7 @@ There are **12 block kinds**:
 
 ## For the agent (MCP)
 
-The plugin bundles a hand-rolled, **dependency-free** JSON-RPC 2.0 stdio MCP server (no SDK, so the package stays zero-dependency and `uvx`-startable with no resolution step). It runs via the `workflow-studio mcp` subcommand and exposes **9 tools**:
+The package ships a hand-rolled, **dependency-free** JSON-RPC 2.0 stdio MCP server (no SDK, so the package stays zero-dependency and `uvx`-startable with no resolution step). It runs via the `workflow-studio mcp` subcommand and exposes **9 tools**:
 
 | Tool | Kind | What it does |
 |------|------|--------------|
@@ -87,20 +87,20 @@ Without this, the only human↔agent channel is a script file dropped on disk th
 
 ## Install
 
-Requires [`uv`/`uvx`](https://docs.astral.sh/uv/) on your `PATH`.
+Requires [`uv`/`uvx`](https://docs.astral.sh/uv/) on your `PATH`. The package is published on PyPI as
+[`workflow-studio`](https://pypi.org/project/workflow-studio/) — nothing to build.
 
-### Plugin (recommended — works today via the bundled wheel, no PyPI needed)
-
-Once the repo is pushed to GitHub:
+### Plugin (recommended)
 
 ```
 /plugin marketplace add hculap/workflow-studio
 /plugin install workflow-studio@workflow-studio
 ```
 
-Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` opens the UI.
+Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` opens the UI. The plugin
+launches the MCP server with `uvx workflow-studio mcp`, pulling the package from PyPI.
 
-### Local dev (before pushing to GitHub)
+### Local dev (from a checkout, before pushing the marketplace repo)
 
 ```
 /plugin marketplace add /absolute/path/to/plugin-marketplace
@@ -110,28 +110,25 @@ Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` o
 ### MCP server only (no plugin)
 
 ```
-claude mcp add workflow-studio -s user -- uvx --from /path/to/workflow_studio-0.1.0-py3-none-any.whl workflow-studio mcp
+claude mcp add workflow-studio -s user -- uvx workflow-studio mcp
 ```
 
 ### Dashboard (standalone)
 
-After a PyPI publish this becomes `uvx workflow-studio`. Until then, run it from the local wheel:
-
 ```
-uvx --from /path/to/wheel workflow-studio
+uvx workflow-studio
 ```
 
-## Status: not on PyPI yet
+## Status
 
-Workflow Studio is **not published to PyPI yet**. There is no live `pip install` / `uvx workflow-studio` from a public index. The install that works today is the **plugin with its bundled, version-pinned wheel** (`vendor/workflow_studio-0.1.0-py3-none-any.whl`).
-
-Publishing to PyPI is a documented, optional next step: run `uv publish` from the package directory, then simplify the plugin's `mcpServers` command to `{"command": "uvx", "args": ["workflow-studio", "mcp"]}`, drop the vendored wheel, and re-install. Until then, the bundled wheel is the mechanism.
+The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today. The
+Claude Code plugin marketplace is served from this repo, so `/plugin marketplace add hculap/workflow-studio`
+works once the repo is pushed to GitHub (until then, use the local-path form above). `v0.1.0`, MIT.
 
 ## Gotchas
 
 - **Shared data directory.** `save_workflow` / `promote_run` write to `WORKFLOW_STUDIO_DATA` (default `~/.local/share/workflow-studio`). The human's dashboard must read the **same** directory or the agent's drafts won't appear in the builder. Both default to it when run via `uvx`; running the dashboard from a source checkout writes to the repo root instead. `get_context` reports the resolved `dataDir` so you can diagnose a mismatch.
 - **`uvx` must be on `PATH`.** A GUI-launched Claude Code may not inherit it, in which case the MCP server shows `failed` in `/mcp`.
-- **Version-pinned wheel.** The plugin's `mcpServers` args pin `workflow_studio-0.1.0-py3-none-any.whl`. On a version bump you must rebuild, re-vendor, and update that filename (or move to the PyPI one-liner).
 
 ## Repo layout
 
@@ -141,7 +138,6 @@ workflow-studio/
   .claude-plugin/plugin.json
   skills/workflow-studio/SKILL.md
   commands/dashboard.md
-  vendor/workflow_studio-0.1.0-py3-none-any.whl
 README.md   LICENSE   CHANGELOG.md   .gitignore
 ```
 

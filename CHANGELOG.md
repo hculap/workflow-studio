@@ -16,8 +16,9 @@ Initial release.
 - **No-code builder** — a canvas that compiles blocks (agent, fanout, loop, subwf, gate, filter,
   switch, pipeline, rank, input, param, start) to a runnable Workflow script with a lossless
   `@wf-builder` sidecar.
-- **Plugin packaging** — installs via a bundled wheel (no PyPI dependency), plus a
-  `/workflow-studio:dashboard` command and a skill that teaches the agent when/how to use the tools.
+- **Published to PyPI** as [`workflow-studio`](https://pypi.org/project/workflow-studio/); the plugin
+  launches the MCP server with `uvx workflow-studio mcp`. Includes a `/workflow-studio:dashboard`
+  command and a skill that teaches the agent when/how to use the tools.
 - Honesty flags on every tool result (`taskMatched`/`status` for observed data; `source`/`hasSidecar`/
   decoded `contract` for declared designs).
 

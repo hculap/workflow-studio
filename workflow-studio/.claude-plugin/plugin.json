@@ -10,12 +10,7 @@
     "workflow-studio": {
       "type": "stdio",
       "command": "uvx",
-      "args": [
-        "--from",
-        "${CLAUDE_PLUGIN_ROOT}/vendor/workflow_studio-0.1.0-py3-none-any.whl",
-        "workflow-studio",
-        "mcp"
-      ]
+      "args": ["workflow-studio", "mcp"]
     }
   }
 }
