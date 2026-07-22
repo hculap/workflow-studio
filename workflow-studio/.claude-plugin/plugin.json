@@ -4,7 +4,7 @@
   "description": "Observe and author Claude Code multi-agent Workflow runs — a local no-code builder + observability dashboard, exposed to the agent over MCP.",
   "version": "0.1.0",
   "author": { "name": "Szymon Paluch", "email": "hculap@gmail.com" },
-  "homepage": "https://szymonpaluch.com/workflow-studio",
+  "homepage": "https://szymonpaluch.com/workflow-studio/",
   "keywords": ["workflow", "agents", "observability", "mcp", "no-code", "claude-code"],
   "mcpServers": {
     "workflow-studio": {

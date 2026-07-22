@@ -6,7 +6,7 @@
 
 **A local, no-code builder and observability dashboard for Claude Code's `Workflow` tool — exposed to the agent over MCP.**
 
-**Website:** [szymonpaluch.com/workflow-studio](https://szymonpaluch.com/workflow-studio) · **Install:** `uvx workflow-studio` ([PyPI](https://pypi.org/project/workflow-studio/))
+**Website:** [szymonpaluch.com/workflow-studio](https://szymonpaluch.com/workflow-studio/) · **Install:** `uvx workflow-studio` ([PyPI](https://pypi.org/project/workflow-studio/))
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
@@ -162,4 +162,4 @@ To remove drafted workflows and cached data, delete `WORKFLOW_STUDIO_DATA` (defa
 
 MIT © 2026 Szymon Paluch &lt;hculap@gmail.com&gt;
 
-Website: https://szymonpaluch.com/workflow-studio · Source &amp; issues: https://github.com/hculap/workflow-studio
+Website: https://szymonpaluch.com/workflow-studio/ · Source &amp; issues: https://github.com/hculap/workflow-studio
