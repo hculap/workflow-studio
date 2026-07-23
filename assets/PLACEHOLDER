@@ -1,5 +1,0 @@
-Screenshots / demo GIF go here (referenced by README.md and PROMOTION.md):
-  observe.png  — the Observe view: a real run's phase/agent/token timeline
-  author.png   — the Author view: the no-code block canvas
-  demo.gif     — 30-60s: install -> /workflow-studio:dashboard -> observe -> agent tools -> draft-back
-Capture from a real session (dashboard at http://127.0.0.1:8787/). Delete this file once added.

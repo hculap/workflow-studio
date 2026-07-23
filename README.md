@@ -18,12 +18,23 @@ Everything runs locally. The dashboard binds `127.0.0.1`, reads your local Claud
 
 ## Screenshots
 
-> **TODO: add screenshots.** The image references below are placeholders; the files do not exist in the repo yet.
+### Observe
 
-```
-![Observe — run timeline](assets/observe.png)      <!-- TODO -->
-![Author — block builder](assets/author.png)       <!-- TODO -->
-```
+A real `deep-research` run — `Scope → Search → Fetch → Verify → Synthesize` — that fanned out to **111 agents** across 5 phases (513 tool calls, 3.7M tokens, ~22 min):
+
+![Observe — a run's phase/agent graph](assets/observe-graph.png)
+
+Each node is a phase; the ring shows how many of its agents finished, and each edge shows how one stage's output feeds the next (`75 ag → [object ×75]`). Every number here is read from the run's own overlay — measured, not guessed.
+
+Flip to the timeline lens for the wall-clock view. Here a shorter `landing-interactive-review` run (9m 49s): the `Review` fan-out (blue) runs first, then `Verify` (pink) staggers in as each agent lands.
+
+![Observe — run timeline](assets/observe-timeline.png)
+
+### Author
+
+The no-code block builder. Add typed blocks from `+ Agents / + Data / + Control`, wire them up, and hit **Run** — it compiles to a runnable Workflow script (this one: `START → agent → fan-out ×10 → fan-out ×10 → agent`):
+
+![Author — block builder](assets/author.png)
 
 ## The two halves
 
