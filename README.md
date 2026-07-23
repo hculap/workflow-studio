@@ -171,6 +171,56 @@ location /workflow-studio/ {
 Stripping proxies work too — the server strips the prefix itself if present, so it doesn't matter
 whether the proxy forwards `/workflow-studio/runs` or the bare `/runs`.
 
+### Run it as a hardened `systemd` service
+
+To keep it up behind the proxy, run the dashboard as a service. A hardened unit (adapt `User` and the
+`/home/<user>` paths):
+
+```ini
+# /etc/systemd/system/workflow-studio.service
+[Unit]
+Description=Workflow Studio
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=<user>
+Environment=HOME=/home/<user>
+Environment=PATH=/home/<user>/.local/bin:/usr/bin:/bin
+Environment=WORKFLOW_STUDIO_BASE_PATH=/workflow-studio
+Environment=WORKFLOW_STUDIO_NO_OPEN=1
+ExecStart=/home/<user>/.local/bin/uvx workflow-studio --host 127.0.0.1 --port 8787 --no-open --all-projects
+Restart=on-failure
+
+# ── hardening ──
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+# uvx materializes its tool environment here — REQUIRED under ProtectSystem=strict or the service
+# won't start (add ~/.cache/uv too for a cold first run). The data dir is where "Save as template" writes.
+ReadWritePaths=/home/<user>/.local/share/uv /home/<user>/.cache/uv /home/<user>/.local/share/workflow-studio
+# ProtectSystem=strict also mounts /tmp read-only — give the service its own writable /tmp.
+# Safe: Workflow Studio reads run artifacts from under $HOME, never /tmp.
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then `sudo systemctl daemon-reload && sudo systemctl enable --now workflow-studio`.
+
+Two hardening gotchas that block startup under `ProtectSystem=strict`, both handled above:
+
+- **`ReadWritePaths` must include uv's tool dir** (`~/.local/share/uv`, plus `~/.cache/uv` on a cold
+  machine) — `uvx` writes the resolved package there; with the rest of the FS read-only it can't launch.
+- **`PrivateTmp=true`** — `strict` makes `/tmp` read-only; a private tmp restores a writable one. It's
+  safe because run data lives under `$HOME`, not `/tmp`.
+
+**Scope.** A service has no "current project", so `--all-projects` shows runs from the whole machine.
+To pin it to one project instead, drop that flag and add `--project /home/<user>/path/to/project`
+(then `systemctl daemon-reload && systemctl restart workflow-studio`).
+
 ## Status
 
 The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today, and
