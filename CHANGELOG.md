@@ -3,6 +3,16 @@
 All notable changes to the Workflow Studio Claude Code plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-07-23
+
+### Added
+- **Reverse-proxy subpath support.** Serve the dashboard under a prefix (e.g.
+  `https://example.com/workflow-studio/`) via `WORKFLOW_STUDIO_BASE_PATH` / `--base-path`. The server
+  injects a `<base href>` into `index.html` and the client prefixes every asset, API, and router path;
+  it also strips the prefix off incoming requests, so both stripping and non-stripping proxies work.
+  `get_context` now reports `basePath` in its doctor view. Fully backward-compatible — the default
+  (unset) is the unchanged root behaviour on `127.0.0.1`.
+
 ## [0.1.0] — 2026-07-21
 
 Initial release.
@@ -22,4 +32,5 @@ Initial release.
 - Honesty flags on every tool result (`taskMatched`/`status` for observed data; `source`/`hasSidecar`/
   decoded `contract` for declared designs).
 
+[0.2.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.2.0
 [0.1.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.1.0

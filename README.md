@@ -103,6 +103,18 @@ Without this, the only human↔agent channel is a script file dropped on disk th
 Requires [`uv`/`uvx`](https://docs.astral.sh/uv/) on your `PATH`. The package is published on PyPI as
 [`workflow-studio`](https://pypi.org/project/workflow-studio/) — nothing to build.
 
+### Hand it to your agent (easiest)
+
+You're probably already in a coding agent. Paste this and let it do the whole install:
+
+```
+Read https://github.com/hculap/workflow-studio/blob/main/AGENT_INSTALL.md and set up Workflow Studio for me — run the steps, verify it, and tell me whether to restart Claude Code.
+```
+
+It points the agent at **[AGENT_INSTALL.md](AGENT_INSTALL.md)** — a short guide that has it register the
+marketplace, install the plugin, verify the MCP server is connected, and tell you when to restart. The
+manual commands below do the same thing by hand.
+
 ### Plugin (recommended)
 
 ```
@@ -132,11 +144,37 @@ claude mcp add workflow-studio -s user -- uvx workflow-studio mcp
 uvx workflow-studio
 ```
 
+## Behind a reverse proxy (subpath) · v0.2.0+
+
+By default the dashboard is served at the root (`http://127.0.0.1:8787/`). To mount it under a
+subpath — e.g. when `location /` on your domain is already taken — set a base path. It's a **runtime**
+setting (the PyPI build stays mount-agnostic), so nothing is hard-coded:
+
+```
+WORKFLOW_STUDIO_BASE_PATH=/workflow-studio workflow-studio --no-open
+# or:  workflow-studio --no-open --base-path /workflow-studio
+```
+
+The server then stamps a `<base href>` into `index.html` and prefixes every asset/API/router path, so
+assets, the data API, and deep-linked runs all resolve under the prefix. Example nginx (the dashboard
+polls over plain HTTP — no WebSocket/SSE, so no `Upgrade` handling is needed):
+
+```nginx
+location = /workflow-studio { return 301 /workflow-studio/; }
+location /workflow-studio/ {
+    proxy_pass http://127.0.0.1:8787;      # no trailing slash: forwards the full path incl. the prefix
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+Stripping proxies work too — the server strips the prefix itself if present, so it doesn't matter
+whether the proxy forwards `/workflow-studio/runs` or the bare `/runs`.
+
 ## Status
 
-The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today. The
-Claude Code plugin marketplace is served from this repo, so `/plugin marketplace add hculap/workflow-studio`
-works once the repo is pushed to GitHub (until then, use the local-path form above). `v0.1.0`, MIT.
+The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today, and
+`/plugin marketplace add hculap/workflow-studio` installs the plugin from this repo. `v0.2.0`, MIT.
 
 ## Gotchas
 
