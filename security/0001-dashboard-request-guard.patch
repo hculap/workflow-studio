@@ -1,0 +1,150 @@
+--- a/workflow_studio/serve.py
++++ b/workflow_studio/serve.py
+@@ -895,11 +895,95 @@
+     return {"ok": False}
+ 
+ 
++# ── request guard ──
++# The dashboard reads Claude Code transcripts and writes builder templates, so it answers only
++# requests addressed to it. Without these checks any web page open in the same browser can POST to
++# /save (CSRF: a cross-site form or fetch reaches 127.0.0.1 with the user's own network position),
++# and a page on a DNS-rebinding domain can read /runs and /data.json (the request reaches 127.0.0.1
++# carrying the attacker's host name in Host). Three checks close that:
++#   - every request: the Host header must be on the allowlist (loopback names on the bound port,
++#     plus anything in --allowed-host / $WORKFLOW_STUDIO_ALLOWED_HOSTS, e.g. a reverse-proxy domain);
++#   - every POST: an Origin, when present, must be on the same allowlist, and Sec-Fetch-Site must
++#     not be cross-site (browsers always send Origin on POST; curl and the MCP server send none);
++#   - every POST: Content-Type must be application/json, which a plain HTML form cannot send and
++#     which forces a CORS preflight that this server never answers.
++LOOPBACK_NAMES = ("127.0.0.1", "localhost", "[::1]")
++
++
++def _split_host(value):
++    """'name:port' → (name, port), keeping a bracketed IPv6 literal whole."""
++    v = (value or "").strip().lower()
++    if v.startswith("["):
++        end = v.find("]")
++        if end == -1:
++            return v, ""
++        return v[:end + 1], v[end + 2:]
++    name, _, port = v.partition(":")
++    return name, port
++
++
++def host_allowlist(bind_host, port, extra=""):
++    """Host values this server answers: the loopback names (and the bind address, unless it is a
++    wildcard) on the bound port, plus comma-separated extras. An extra without a port allows that
++    name on any port, which is what a reverse proxy on 80/443 needs."""
++    names = set(LOOPBACK_NAMES)
++    if bind_host and bind_host not in ("0.0.0.0", "::"):
++        names.add("[%s]" % bind_host if ":" in bind_host and not bind_host.startswith("[") else bind_host.lower())
++    allowed = {"%s:%d" % (n, port) for n in names}
++    if port == 80:
++        allowed |= names
++    for item in (extra or "").split(","):
++        item = item.strip().lower()
++        if item:
++            allowed.add(item)
++    return frozenset(allowed)
++
++
++def host_allowed(value, allowed):
++    v = (value or "").strip().lower()
++    if not v:
++        return False
++    if v in allowed:
++        return True
++    name, _port = _split_host(v)
++    return name in allowed
++
++
++def origin_allowed(origin, allowed):
++    if origin is None:
++        return True                       # not a browser: CSRF needs a browser
++    parts = urllib.parse.urlsplit(origin.strip())
++    if parts.scheme not in ("http", "https") or not parts.netloc:
++        return False                      # includes the opaque "null" origin
++    return host_allowed(parts.netloc, allowed)
++
++
+ class Handler(http.server.SimpleHTTPRequestHandler):
+     launch_project = None   # default project scope (slug) from cwd; None = cwd is not a known project
+     launch_cwd = None       # absolute launch directory (display / empty state)
+     current_session = None  # session marked "• current" (--session or $CLAUDE_CODE_SESSION_ID)
+     base_path = ""          # reverse-proxy mount prefix ("" = root); e.g. "/workflow-studio"
++    allowed_hosts = frozenset()  # Host/Origin allowlist, set in main() once the port is bound
++
++    def _guard(self, write=False):
++        """True when the request may proceed; otherwise answers 403/415 and returns False."""
++        if not host_allowed(self.headers.get("Host"), self.allowed_hosts):
++            self.send_error(403, "Unknown Host",
++                            "This server answers only the hosts on its allowlist. Behind a reverse "
++                            "proxy, add the public host name with --allowed-host or "
++                            "WORKFLOW_STUDIO_ALLOWED_HOSTS.")
++            return False
++        if not write:
++            return True
++        if (self.headers.get("Sec-Fetch-Site") or "").strip().lower() == "cross-site" \
++                or not origin_allowed(self.headers.get("Origin"), self.allowed_hosts):
++            self.send_error(403, "Cross-origin request refused")
++            return False
++        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
++        if ctype != "application/json":
++            self.send_error(415, "Send application/json")
++            return False
++        return True
+ 
+     def _strip_base(self, path):
+         """Drop the configured mount prefix from an incoming request path so route matching stays
+@@ -930,7 +1014,14 @@
+         session = (qs.get("sesja") or qs.get("session") or [None])[0]
+         return project, session
+ 
++    def do_HEAD(self):
++        if not self._guard():
++            return
++        return super().do_HEAD()
++
+     def do_GET(self):
++        if not self._guard():
++            return
+         self.path = self._strip_base(self.path)   # prefix-agnostic from here on
+         path = self.path.split("?")[0]
+         # ── data API (always wins over the static app) ──
+@@ -1009,6 +1100,8 @@
+         self.wfile.write(data)
+ 
+     def do_POST(self):
++        if not self._guard(write=True):
++            return
+         self.path = self._strip_base(self.path)   # prefix-agnostic from here on
+         route = self.path.split("?")[0]
+         if route == "/save":
+@@ -1121,7 +1214,7 @@
+         return self._json(branch_stats((qs.get("template") or [""])[0], sess))
+ 
+     def log_message(self, fmt, *args):
+-        msg = args[0] if args else ""
++        msg = str(args[0]) if args else ""   # send_error logs (code, message): args[0] is an int
+         if "/data.json" not in msg and "/runs" not in msg:
+             super().log_message(fmt, *args)
+ 
+@@ -1165,6 +1258,9 @@
+     ap.add_argument("--base-path", default=None,
+                     help="serwuj pod prefiksem za reverse proxy, np. /workflow-studio "
+                          "(lub $WORKFLOW_STUDIO_BASE_PATH); domyślnie root")
++    ap.add_argument("--allowed-host", action="append", default=[],
++                    help="dodatkowa nazwa hosta akceptowana w nagłówkach Host i Origin, np. domena "
++                         "reverse proxy (można powtarzać; lub $WORKFLOW_STUDIO_ALLOWED_HOSTS po przecinku)")
+     args = ap.parse_args()
+ 
+     explicit = args.port is not None
+@@ -1178,6 +1274,8 @@
+     Handler.base_path = _resolve_base_path(args.base_path)
+ 
+     httpd, port = _bind(args.host, port, explicit)
++    Handler.allowed_hosts = host_allowlist(
++        args.host, port, ",".join(args.allowed_host + [os.environ.get("WORKFLOW_STUDIO_ALLOWED_HOSTS", "")]))
+     with httpd:
+         all_runs, _ = discover()
+         lp = Handler.launch_project
