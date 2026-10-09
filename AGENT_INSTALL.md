@@ -43,7 +43,7 @@ claude plugin install workflow-studio@workflow-studio
 ```
 
 The first registers the marketplace (this public GitHub repo); the second installs the plugin, which
-declares an MCP server launched with `uvx workflow-studio mcp` (pulled from PyPI — nothing to build).
+declares an MCP server launched with `uvx workflow-studio==0.2.0 mcp` (pulled from PyPI — nothing to build).
 
 > **Older Claude Code without the `claude plugin` CLI?** Ask the human to type these two slash commands
 > instead (slash commands can't be run by an agent): `/plugin marketplace add hculap/workflow-studio`
@@ -53,7 +53,7 @@ declares an MCP server launched with `uvx workflow-studio mcp` (pulled from PyPI
 
 ```bash
 claude plugin list      # → workflow-studio@workflow-studio · Status: ✔ enabled
-claude mcp list         # → plugin:workflow-studio:workflow-studio: uvx workflow-studio mcp - ✔ Connected
+claude mcp list         # → plugin:workflow-studio:workflow-studio: uvx workflow-studio==0.2.0 mcp - ✔ Connected
 ```
 
 If `claude mcp list` shows `✘ Failed` for it, `uvx` is almost certainly not on the `PATH` Claude Code

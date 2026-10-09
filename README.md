@@ -123,7 +123,7 @@ manual commands below do the same thing by hand.
 ```
 
 Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` opens the UI. The plugin
-launches the MCP server with `uvx workflow-studio mcp`, pulling the package from PyPI.
+launches the MCP server with `uvx workflow-studio==0.2.0 mcp`, pulling that exact version from PyPI.
 
 ### Local dev (from a checkout, before pushing the marketplace repo)
 
@@ -224,7 +224,7 @@ To pin it to one project instead, drop that flag and add `--project /home/<user>
 ## Status
 
 The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today, and
-`/plugin marketplace add hculap/workflow-studio` installs the plugin from this repo. `v0.2.0`, MIT.
+`/plugin marketplace add hculap/workflow-studio` installs the plugin from this repo. Plugin 0.2.1, package 0.2.0 on PyPI, MIT.
 
 ## Gotchas
 
@@ -239,6 +239,7 @@ workflow-studio/
   .claude-plugin/plugin.json
   skills/workflow-studio/SKILL.md
   commands/dashboard.md
+  README.md   LICENSE        # shipped with the plugin (an install gets only this folder)
 README.md   LICENSE   CHANGELOG.md   .gitignore
 ```
 

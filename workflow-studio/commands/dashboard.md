@@ -9,7 +9,7 @@ Start the Workflow Studio dashboard for the user as a background process and rep
 Run (in the background so it keeps serving; pass through any arguments the user gave in `$ARGUMENTS`):
 
 ```
-uvx workflow-studio $ARGUMENTS
+uvx workflow-studio==0.2.0 $ARGUMENTS
 ```
 
 It serves at `http://127.0.0.1:8787/` (it scans for a free port if 8787 is taken — read the printed

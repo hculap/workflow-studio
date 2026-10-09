@@ -3,6 +3,21 @@
 All notable changes to the Workflow Studio Claude Code plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] — 2026-10-09
+
+Plugin-only release; the `workflow-studio` package on PyPI stays at 0.2.0.
+
+### Changed
+- **Pinned package version.** The MCP server now starts with `uvx workflow-studio==0.2.0 mcp`, and
+  `/workflow-studio:dashboard` with `uvx workflow-studio==0.2.0`, instead of whatever version is newest
+  on PyPI. A new package version now reaches users through a plugin update.
+
+### Added
+- `workflow-studio/README.md`: what the plugin runs, what it reads and writes on your machine, and the
+  one network request it causes (the package download from PyPI).
+- `workflow-studio/LICENSE` and `"license": "MIT"`, `"repository"` in `plugin.json`, so the plugin folder
+  carries its own license.
+
 ## [0.2.0] — 2026-07-23
 
 ### Added
@@ -32,5 +47,6 @@ Initial release.
 - Honesty flags on every tool result (`taskMatched`/`status` for observed data; `source`/`hasSidecar`/
   decoded `contract` for declared designs).
 
+[0.2.1]: https://github.com/hculap/workflow-studio/releases/tag/v0.2.1
 [0.2.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.2.0
 [0.1.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.1.0
