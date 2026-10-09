@@ -1,11 +1,11 @@
 # Workflow Studio — Launch Kit
 
-Honest promotion copy for **Workflow Studio** v0.1.0. Every claim here is grounded in the codebase and the publish brief. Read the ground rules before editing:
+Honest promotion copy for **Workflow Studio** v0.2.0. Every claim here is grounded in the codebase and the publish brief. Read the ground rules before editing:
 
-- **Not on PyPI yet.** The install that works today is the plugin with its **bundled wheel**. PyPI (`uvx workflow-studio`) is a documented next step, not a live channel. Never write "pip install" / "available on PyPI" as if it were live.
+- **On PyPI since 0.1.0 (2026-07-22); current version 0.2.0 (2026-07-23).** The plugin launches the MCP server with `uvx workflow-studio==0.2.0 mcp`, and `uvx workflow-studio` runs the dashboard alone. Use the `uvx` and `/plugin` commands below; the docs don't cover `pip install`.
 - **No fabricated traction.** No user counts, stars, benchmarks, latency numbers, "blazing fast", or testimonials — none exist.
 - **No invented features.** Only what is listed here (all verified in the code).
-- **Screenshots don't exist yet.** All image references are clearly-marked placeholders.
+- **Screenshots exist** in `assets/` (`observe-graph.png`, `observe-timeline.png`, `author.png`, added 2026-07-23). Use those; there is no recording yet.
 - **Exact commands only** (see [Install](#install-works-today)). A wrong command in promo = broken onboarding.
 
 ---
@@ -38,48 +38,40 @@ Claude Code's `Workflow` tool lets you orchestrate deterministic multi-agent run
 
 **Collaborate over MCP.** Both halves are exposed to the Claude Code agent through a hand-rolled, dependency-free MCP server (`workflow-studio mcp`) with **9 tools** — seven read tools (`get_context`, `list_projects`, `list_runs`, `get_run`, `list_workflows`, `get_workflow`, `get_run_design`) and two write tools (`save_workflow`, which drafts a design *into* your builder, and `promote_run`, which turns a run into a reusable workflow). The server never fabricates or conflates: observed data keeps its `taskMatched`/`status` flags, declared designs keep their `source`/`hasSidecar`/contract, and the server *cannot start a run* — it hands the agent a design's `script` to execute with the agent's own `Workflow` tool. The result is one live surface where you build in the canvas, the agent discovers and runs what you built, inspects the observations, and drafts designs back for you to refine.
 
-It's local-first and boring in the right ways: pure Python standard library, **zero runtime dependencies**, `requires-python >=3.9`, binds `127.0.0.1` only, no telemetry, no network calls. The MCP server is a plain JSON-RPC 2.0 stdio loop (no SDK) so the package resolves and starts instantly under `uvx`. It installs today as a Claude Code plugin with a bundled wheel — see the install steps below. MIT licensed, by Szymon Paluch.
+It's local-first and boring in the right ways: pure Python standard library, **zero runtime dependencies**, `requires-python >=3.9`, binds `127.0.0.1` only, no telemetry, no network calls. The MCP server is a plain JSON-RPC 2.0 stdio loop (no SDK) so the package resolves and starts instantly under `uvx`. It installs as a Claude Code plugin that pulls the package from PyPI — see the install steps below. MIT licensed, by Szymon Paluch.
 
-> _Screenshots are placeholders until captured — see the [demo storyboard](#demo-gif-storyboard-3060s) below._
->
-> `![Workflow Studio dashboard](assets/dashboard.png)` — **TODO: add screenshot**
+![Observe — a run's phase/agent graph](assets/observe-graph.png)
+
+![Observe — run timeline](assets/observe-timeline.png)
+
+![Author — block builder](assets/author.png)
 
 ---
 
 ## Install (works today)
 
-Requires `uv` / `uvx` on your `PATH` (https://docs.astral.sh/uv/).
+Requires `uv` / `uvx` on your `PATH` (https://docs.astral.sh/uv/). The package is on PyPI as `workflow-studio`.
 
-### Plugin (recommended — bundled wheel, no PyPI needed)
-
-Once the repo is pushed to GitHub:
+### Plugin (recommended)
 
 ```
 /plugin marketplace add hculap/workflow-studio
 /plugin install workflow-studio@workflow-studio
 ```
 
-Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` opens the UI.
-
-### Local dev (before pushing to GitHub)
-
-```
-/plugin marketplace add /absolute/path/to/plugin-marketplace
-/plugin install workflow-studio@workflow-studio
-```
+Then `/mcp` lists `workflow-studio` (9 tools) and `/workflow-studio:dashboard` opens the UI. The plugin launches the MCP server with `uvx workflow-studio==0.2.0 mcp`.
 
 ### MCP server only (no plugin)
 
 ```
-claude mcp add workflow-studio -s user -- uvx --from /path/to/workflow_studio-0.1.0-py3-none-any.whl workflow-studio mcp
+claude mcp add workflow-studio -s user -- uvx workflow-studio mcp
 ```
 
 ### Dashboard (standalone)
 
-Before PyPI (local wheel): `uvx --from /path/to/wheel workflow-studio`.
-After a future PyPI publish: `uvx workflow-studio`.
-
-> **PyPI is a documented next step, not live.** When ready: `uv publish`, then simplify the plugin's `mcpServers` command to `{"command":"uvx","args":["workflow-studio","mcp"]}`, drop the vendored wheel, and re-install. Until then, the bundled wheel is the mechanism.
+```
+uvx workflow-studio
+```
 
 ---
 
@@ -107,7 +99,7 @@ Honesty is baked into the data, not marketing: observed runs carry a `taskMatche
 
 It's local-only (binds `127.0.0.1`, no telemetry, no network calls), pure Python standard library with **zero runtime dependencies**, and ships the pre-built UI in one wheel. MIT licensed.
 
-**It is not on PyPI yet** — the working install today is a Claude Code plugin with a bundled wheel:
+It installs as a Claude Code plugin (the package comes from PyPI):
 
 ```
 /plugin marketplace add hculap/workflow-studio
@@ -135,17 +127,17 @@ Two design choices I care about:
 1. **Honesty in the data.** Observed metrics carry `taskMatched` (false = heuristic, not measured) and `status` (a live/incomplete elapsed span is a lower bound); declared designs carry `source` (`snapshot` = exactly what ran vs `template` = may differ) and a `hasSidecar` contract flag. The server never conflates "declared" with "observed," and it can't start runs — it hands back a `script` for the agent's own `Workflow` tool.
 2. **Zero dependencies.** The core is pure Python standard library (`dependencies = []`, `requires-python >=3.9`) and the MCP server is a hand-rolled JSON-RPC 2.0 stdio loop with no SDK, so it resolves and starts instantly under `uvx`. Ships the pre-built UI in one wheel. Runs on `127.0.0.1`, no telemetry.
 
-Caveat: **it's not on PyPI yet.** The install that works today is a Claude Code plugin with a bundled wheel (`/plugin marketplace add hculap/workflow-studio` then `/plugin install workflow-studio@workflow-studio`; needs `uv`/`uvx` on PATH). PyPI + a `uvx workflow-studio` one-liner is the documented next step. No screenshots in the repo yet — that's on the near-term list. MIT. Repo: https://github.com/hculap/workflow-studio. Happy to answer questions.
+Install: a Claude Code plugin (`/plugin marketplace add hculap/workflow-studio` then `/plugin install workflow-studio@workflow-studio`; needs `uv`/`uvx` on PATH), or `uvx workflow-studio` for the dashboard alone; the package is on PyPI. Screenshots are in the README. MIT. Repo: https://github.com/hculap/workflow-studio. Happy to answer questions.
 
 ---
 
 ## Demo GIF storyboard (30–60s)
 
-No screenshots or recordings exist yet — this is the shot list to produce the launch GIF. Target 45s, silent, with short on-screen caption cards between beats. Record at 2× terminal font size; keep the dashboard and a Claude Code session side by side (or cut between them) so the "one live surface" story is visible.
+No recording exists yet (the screenshots are in `assets/`) — this is the shot list to produce the launch GIF. Target 45s, silent, with short on-screen caption cards between beats. Record at 2× terminal font size; keep the dashboard and a Claude Code session side by side (or cut between them) so the "one live surface" story is visible.
 
 | # | Time | Scene | On-screen caption |
 |---|------|-------|-------------------|
-| 1 | 0:00–0:06 | Claude Code prompt. Type `/plugin marketplace add hculap/workflow-studio` then `/plugin install workflow-studio@workflow-studio`. Show the install confirmation. | "Install as a plugin — bundled wheel, no PyPI needed" |
+| 1 | 0:00–0:06 | Claude Code prompt. Type `/plugin marketplace add hculap/workflow-studio` then `/plugin install workflow-studio@workflow-studio`. Show the install confirmation. | "Install as a plugin — two commands" |
 | 2 | 0:06–0:11 | Run `/mcp`; highlight `workflow-studio` listed with its 9 tools and a `✔ Connected` state. | "9 MCP tools. Connected." |
 | 3 | 0:11–0:17 | Run `/workflow-studio:dashboard`; the browser opens the dashboard at `127.0.0.1`. | "Local dashboard — binds 127.0.0.1" |
 | 4 | 0:17–0:27 | Open a **real run**: the graph/timeline renders phases, per-agent nodes, tokens, timing. Hover a gate/switch to show which branch was taken. If the run is live, point the cursor at the `status` badge (elapsed = lower bound). | "See what the run actually did — and what's heuristic vs measured" |
