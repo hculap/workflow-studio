@@ -3,7 +3,7 @@
 All notable changes to the Workflow Studio Claude Code plugin are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.2.1] — Unreleased
+## [0.2.1] — 2026-10-09
 
 Plugin-only release; the `workflow-studio` package on PyPI stays at 0.2.0.
 
@@ -47,5 +47,6 @@ Initial release.
 - Honesty flags on every tool result (`taskMatched`/`status` for observed data; `source`/`hasSidecar`/
   decoded `contract` for declared designs).
 
+[0.2.1]: https://github.com/hculap/workflow-studio/releases/tag/v0.2.1
 [0.2.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.2.0
 [0.1.0]: https://github.com/hculap/workflow-studio/releases/tag/v0.1.0

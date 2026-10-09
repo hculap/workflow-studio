@@ -224,7 +224,7 @@ To pin it to one project instead, drop that flag and add `--project /home/<user>
 ## Status
 
 The package is **live on PyPI** — `uvx workflow-studio` and `uvx workflow-studio mcp` work today, and
-`/plugin marketplace add hculap/workflow-studio` installs the plugin from this repo. `v0.2.0`, MIT.
+`/plugin marketplace add hculap/workflow-studio` installs the plugin from this repo. Plugin 0.2.1, package 0.2.0 on PyPI, MIT.
 
 ## Gotchas
 

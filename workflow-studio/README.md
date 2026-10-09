@@ -12,7 +12,7 @@ Website: [szymonpaluch.com/workflow-studio](https://szymonpaluch.com/workflow-st
 
 ## What it runs and what it connects to
 
-- **The `workflow-studio` package from PyPI, version 0.2.0, pinned.** `uvx` downloads it on first use and caches it. The package is pure Python standard library with no runtime dependencies and needs Python 3.9 or newer. You need [`uv`](https://docs.astral.sh/uv/) (which provides `uvx`) on your `PATH`. Downloading the package from PyPI is the only network request the plugin causes.
+- **The `workflow-studio` package from PyPI, version 0.2.0, pinned.** `uvx` downloads it on first use and caches it. The package is pure Python standard library with no runtime dependencies and needs Python 3.9 or newer. You need [`uv`](https://docs.astral.sh/uv/) (which provides `uvx`) on your `PATH`. These downloads are the only network requests the plugin causes: the package from PyPI and, if your system has no Python 3.9 or newer, a managed CPython that `uv` fetches by default.
 - **The MCP server makes no network calls.** It talks to Claude Code over stdin and stdout only.
 - **The dashboard is a local web server bound to `127.0.0.1`**, on port 8787 or the next free port (or `$PORT`). It opens your default browser at that address unless you pass `--no-open` or set `WORKFLOW_STUDIO_NO_OPEN`. It listens on another address only if you pass `--host` yourself. The web app is bundled in the package and loads nothing from the internet. There is no telemetry.
 
