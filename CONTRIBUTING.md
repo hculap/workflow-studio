@@ -1,7 +1,7 @@
 # Contributing
 
 This repository is the **Claude Code plugin marketplace** for Workflow Studio: manifests, a skill, and
-a command. The plugin's MCP server runs `uvx workflow-studio mcp`, pulling the
+a command. The plugin's MCP server runs `uvx workflow-studio==0.2.0 mcp`, pulling the
 [`workflow-studio`](https://pypi.org/project/workflow-studio/) package from PyPI. The application source
 (the Python package + the React dashboard) lives in the main Workflow Studio project.
 
@@ -10,7 +10,8 @@ a command. The plugin's MCP server runs `uvx workflow-studio mcp`, pulling the
 ```
 .claude-plugin/marketplace.json     # marketplace manifest
 workflow-studio/
-  .claude-plugin/plugin.json        # plugin manifest (declares the MCP server → uvx workflow-studio mcp)
+  .claude-plugin/plugin.json        # plugin manifest (declares the MCP server → uvx workflow-studio==<version> mcp)
+  README.md, LICENSE                # shipped with the plugin: the folder is all an installer gets
   skills/workflow-studio/SKILL.md   # teaches the agent when/how to use the tools
   commands/dashboard.md             # /workflow-studio:dashboard
 ```
@@ -25,8 +26,11 @@ uvx twine check dist/*                             # validate metadata/README re
 UV_PUBLISH_TOKEN=<pypi-token> uv publish           # publish the new version to PyPI
 ```
 
-Then bump `version` in both manifests here and add a `CHANGELOG.md` entry. The plugin's `mcpServers`
-command is unpinned (`uvx workflow-studio mcp`), so users pick up the new version automatically.
+Then, here: raise `version` in `workflow-studio/.claude-plugin/plugin.json`, move the pinned package
+version (`workflow-studio==<version>`) in `plugin.json`'s `mcpServers` args, `commands/dashboard.md`,
+`skills/workflow-studio/SKILL.md` and the plugin `README.md`, and add a `CHANGELOG.md` entry. The pin is
+deliberate: Anthropic's plugin directory blocks an unpinned `uvx` launcher, and users get a new package
+version through a plugin update. Raise the plugin `version` on every change to the plugin folder.
 
 ## Testing locally
 

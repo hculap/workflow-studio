@@ -52,4 +52,4 @@ use the same `WORKFLOW_STUDIO_DATA` (the default `~/.local/share/workflow-studio
 ## Opening the dashboard for the human
 
 The human sees the visual builder + timeline in a browser. Run `/workflow-studio:dashboard` (or
-`uvx workflow-studio`) to start it on `http://127.0.0.1:8787/`.
+`uvx workflow-studio==0.2.0`) to start it on `http://127.0.0.1:8787/`.
